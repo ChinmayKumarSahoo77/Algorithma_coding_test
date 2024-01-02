@@ -3,6 +3,7 @@
 import socketio
 import eventlet
 
+#Server side
 sio = socketio.Server()
 app = socketio.WSGIApp(sio, static_files={
  '/': {'content_type': 'text/html', 'filename': 'index.html'}
@@ -22,24 +23,24 @@ def my_message(sid,data):
 def response(sid,recdata):
     print(recdata)
 
+# Clinet Side
+sio = socketio.Client()
 
-# sio = socketio.Client()
+@sio.event
+def connect():
+    print('connection established')
 
-# @sio.event
-# def connect():
-#     print('connection established')
+@sio.event
+def message(data):
+    print(data)
 
-# @sio.event
-# def message(data):
-#     print(data)
+@sio.event
+def send_message():
+    sio.emit(event = 'response', data = {'message': 'HI from client'})
+    print('data sent to server')
 
-# @sio.event
-# def send_message():
-#     sio.emit(event = 'response', data = {'message': 'HI from client'})
-#     print('data sent to server')
+sio.connect('http://localhost:3000') 
 
-# sio.connect('http://localhost:3000') 
-
-# @sio.event
-# def disconnect():
-#  print('disconnected from server=>CLIENT')
+@sio.event
+def disconnect():
+ print('disconnected from server=>CLIENT')
